@@ -1,1 +1,22 @@
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+<body dir=rtl style=font-family:system-ui;padding:20px>
+<h3>اصلاح الدخول</h3>
+<input id=p type=password placeholder="الباسورد" style=width:100%;padding:12px>
+<button onclick=go() style=width:100%;padding:12px;background:#2563eb;color:#fff;border:0;border-radius:8px;margin-top:10px>دخول واصلاح</button>
+<pre id=l>جاهز</pre>
+<script>
+const sb=supabase.createClient('https://kuughhseuuinkdsjwtzb.supabase.co','sb_publishable_o_H7X1cY3IF1WfJjV82w1w_4r2btm7e');
+async function go(){
+ l.textContent='جاري...';
+ let r=await sb.auth.signInWithPassword({email:'mohamedanaa2050@gmail.com',password:p.value});
+ if(r.error){l.textContent=r.error.message;return}
+ let pr=await sb.from('profiles').select('*').eq('id',r.data.user.id).maybeSingle();
+ l.textContent='البروفايل: '+JSON.stringify(pr.data);
+ if(!pr.data||!pr.data.active){
+  await sb.from('profiles').upsert({id:r.data.user.id,email:'mohamedanaa2050@gmail.com',active:true,role:'admin'});
+  l.textContent+='\n✅ تم التفعيل';
+ }else{l.textContent+='\n✅ حسابك مفعل';}
+ setTimeout(()=>location.href='./index.html',1200);
+}
+</script>
